@@ -55,6 +55,15 @@ function Count_Major_Master_Out($major){
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
+//นับจำนวนค่าน้ำหนักการตีพิมพ์ ปริญญาโท นอกเวลา
+function Count_Major_Master_weight($major,$weight){
+    $mysqli = connect();
+    $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
+    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.weight='$weight'  ";
+    $rs_count = $mysqli->query($sql_count);
+    $num_count = $rs_count->num_rows;
+    return $num_count;
+}
 
 
 $content = '';
@@ -198,19 +207,19 @@ $faculty_name =   $row_data['faculty_name'];
         <p>&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:39px">
         <p>&nbsp;</p>
@@ -233,8 +242,23 @@ $faculty_name =   $row_data['faculty_name'];
     $tatal_ma_out = 0;
     $sum_in_out = 0;
     $tatal_sum_in_out = 0;
+    //ค่าน้ำหนัก
+    // $weight_01=0;
+    // $weight_02=0;
+    // $weight_04=0;
+    // $weight_06=0;
+    // $weight_08=0;
+    // $weight_1=0;
+    // $sum_weight_01=0;
+    // $sum_weight_02=0;
+    // $sum_weight_04=0;
+    // $sum_weight_06=0;
+    // $sum_weight_08=0;
+    // $sum_weight_1=0;
+    // $tatal_sum_wigth=0;
     $j=1;
     foreach ($rs_fac  as  $row_fac) {
+        $major = $row_fac['major_name'];
         $content .='<tr>
         <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:40px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
@@ -261,25 +285,25 @@ $faculty_name =   $row_data['faculty_name'];
         <p>&nbsp;</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
-        <p>&nbsp;</p>
+        <p>&nbsp;'.$weight_01=Count_Major_Master_weight($major,'0.1').'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;'.$weight_02=Count_Major_Master_weight($major,'0.2').'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;'.$weight_04=Count_Major_Master_weight($major,'0.4').'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;'.$weight_06=Count_Major_Master_weight($major,'0.6').'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;'.$weight_08=Count_Major_Master_weight($major,'0.8').'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
-        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;'.$weight_1=Count_Major_Master_weight($major,'1').'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:39px">
-        <p>&nbsp;</p>
+        <p>&nbsp;'.intval($weight_08=Count_Major_Master_weight($major,'0.8')+$weight_1=Count_Major_Master_weight($major,'1')).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:57px">
         <p>&nbsp;</p>
@@ -294,6 +318,13 @@ $faculty_name =   $row_data['faculty_name'];
     $tatal_ma_in = ((int)$tatal_ma_in + (int)$master_in);
     $tatal_ma_out = ((int)$tatal_ma_out + (int)$master_out);
     $tatal_sum_in_out = ((int)$tatal_ma_out + (int)$tatal_ma_in);
+    //ค่าน้ำหนัก
+    // $sum_weight_01 = ((int)$sum_weight_01 + (int)$weight_01);
+    // $sum_weight_02 = ((int)$sum_weight_02 + (int)$weight_02);
+    // $sum_weight_04 = ((int)$sum_weight_04 + (int)$weight_04);
+    // $sum_weight_06 = ((int)$sum_weight_06 + (int)$weight_06);
+    // $sum_weight_08 = ((int)$sum_weight_08 + (int)$weight_08);
+    // $sum_weight_1 = ((int)$sum_weight_1 + (int)$weight_1);
     }//สาขา
 
     $i++;//นับลำดับคณะ
