@@ -18,22 +18,22 @@ $mpdf = new \Mpdf\Mpdf([
 ]);
 
 
-//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาโท 
+//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก
 function Count_Faculty_Master($faculty){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.faculty_name='$faculty'  AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
+    $sql_count .= " report_t3_graduate.faculty_name='$faculty'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
    //echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 
-//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาโท ในเวลา
+//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก 
 function Count_Major_Master_In($major){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ'  ";
+    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ'  ";
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
@@ -42,7 +42,7 @@ function Count_Major_Master_In($major){
 function Count_Major_Master_Out($major){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ'  ";
+    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ'  ";
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
@@ -50,7 +50,7 @@ function Count_Major_Master_Out($major){
 
 
 $content = '';
-$content .= '<h3 style="text-align: center; vertical-align: middle;">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาโทที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  กค 2566</h3>';
+$content .= '<h3 style="text-align: center; vertical-align: middle;">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาเอกที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  กค 2566</h3>';
 $content .= '<table class="table table-bordered" style="border-collapse: collapse;" width="100%" border="1">
 <thead style="display: table-header-group;">
 <tr style="height: 46px;">
@@ -112,7 +112,7 @@ $content .= '<table class="table table-bordered" style="border-collapse: collaps
 $sql_group = "SELECT * FROM report_t3_group ORDER BY group_id  ASC";
 $rs_group = $mysqli->query($sql_group);
 foreach($rs_group as $row_group){
- $sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate LEFT JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
+ $sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate LEFT JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
 $rs_data = $mysqli->query($sql_data);
 $content.= '<tr><td  colspan="12"><h3>'.$row_group['group_name'].'</h3></td>';
 foreach ($rs_data  as  $row_data) {
@@ -120,7 +120,7 @@ foreach ($rs_data  as  $row_data) {
 $faculty_name =   $row_data['faculty_name']; 
   $num_group=Count_Faculty_Master($faculty_name);
  if($num_group>0){
-$sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.major_name ";
+$sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.major_name ";
 $rs_fac  = $mysqli->query($sql_fac);
 $i=1;
 $content.= '<tr><td  colspan="12"><h4>'.$faculty_name.'</h4></td>';
