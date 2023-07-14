@@ -285,8 +285,9 @@ $faculty_name =   $row_data['faculty_name'];
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
         <p>'.$master_out=intval(Count_Major_Master_Out($row_fac['major_name'])).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
-        <p>'.$sum_in_out=intval(Count_Major_Master_In($row_fac['major_name'])+Count_Major_Master_Out($row_fac['major_name'])).'</p>
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">';
+        $sum_in_out=intval(Count_Major_Master_In($row_fac['major_name'])+Count_Major_Master_Out($row_fac['major_name']));
+       $content .='<p>'.$sum_in_out.'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:30px">
         <p>'.Count_Major_Master_ThesisIS($row_fac['major_name'],'การศึกษาค้นคว้าอิสระ').'</p>
@@ -320,7 +321,7 @@ $faculty_name =   $row_data['faculty_name'];
        $content .='<p>'.$tatal_sum_wigth.'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:71px">';
-        $BC=number_format((((int)$weight_01*0.1)+((int)$weight_02*0.2)+((int)$weight_04*0.4)+((int)$weight_06*0.6)+((int)$weight_08*0.8)+((int)$weight_1*1)*100)/intval(Count_Major_Master_In($row_fac['major_name'])+Count_Major_Master_Out($row_fac['major_name'])),2);
+        $BC=number_format(($tatal_sum_wigth*100)/$sum_in_out,2);
        $content .='<p>'.$BC.'</p>
         </td>';
         $num_40 = ($BC*5)/40;

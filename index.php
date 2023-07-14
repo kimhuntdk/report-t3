@@ -15,22 +15,35 @@ $mpdf = new \Mpdf\Mpdf([
     ],
     'default_font' => 'examplefont', // กำหนดฟอนต์เริ่มต้น
 ]);
+//
+function count_degree($degree_name){
+    $mysqli = connect();
+    $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
+    $sql_count .= " report_t3_graduate.degree_name='$degree_name' GROUP BY report_t3_graduate.degree_name    ";
+    $rs_count = $mysqli->query($sql_count);
+    $num_count = $rs_count->num_rows;
+    return $num_count;
+}
 //ดึงข้อมูลตามระดับ
-$sqlDe = "SELECT * FROM report_t3_degree order by degree_id ASC  ";
+ $sqlDe = "SELECT * FROM report_t3_degree INNER  JOIN report_t3_graduate ON report_t3_degree.degree_name=report_t3_graduate.degree_name GROUP BY report_t3_degree.degree_name order by degree_id ASC  ";
 $rsDe =  $mysqli->query($sqlDe);
 foreach($rsDe as $rowDe){
-    $mpdf->AddPage();
+  //  $mpdf->AddPage();
+
+  $numddd = count_degree($rowDe['degree_name']);
 //ข้อมูลมีในระบบ
-$sql = "SELECT *
+ $sql = "SELECT *
 FROM report_t3_graduate
-LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' ";
+LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]'  ";
 $data = $mysqli->query($sql);
+$row_data_1 = $data->fetch_array();
 $num_data = $data->num_rows;
 $i=1;
    
-   
-     
+    //นับจำนวนมากกว่า
+    
     // สร้างเนื้อหาของหน้ารายงาน
+    
     $content = '';
     $content .= "<h3>$rowDe[degree_name]</h3>";
     $content .= "<table class='table table-bordered' width='100%' border='1' style='border-collapse: collapse;'>";
@@ -42,7 +55,10 @@ $i=1;
      $i++;  
 
     }
+
     $content .= '</table>';
+
+
 
 // แสดงหัวตารางในทุกหน้าที่มีข้อมูล
 

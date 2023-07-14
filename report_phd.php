@@ -68,7 +68,7 @@ function Count_Major_Master_weight($major,$weight){
 //นับจำนวนประเภทวิทยานิพนธ์ สารนิพนธ์
 function Count_Major_Master_ThesisIS($major,$thesis_is_type){
     $mysqli = connect();
-    $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
+    $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate INNER JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
     $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
 
     $rs_count = $mysqli->query($sql_count);
@@ -169,7 +169,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid" style="border-collapse:
     </thead>
     <tbody>';
 //กลุ่ม
-$sql_group = "SELECT * FROM report_t3_group ORDER BY group_id  ASC";
+ $sql_group = "SELECT * FROM report_t3_group INNER JOIN report_t3_faculty ON report_t3_group.group_id =report_t3_faculty.faculty_group  INNER JOIN report_t3_graduate  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY  report_t3_group.group_id ORDER BY report_t3_group.group_id  ASC";
 $rs_group = $mysqli->query($sql_group);
 foreach($rs_group as $row_group){
     $content .='<tr>
@@ -177,9 +177,11 @@ foreach($rs_group as $row_group){
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"><h3>'.$row_group['group_name'].'</h3></span></span></span></span></p>
         </td>
     </tr>';
-
+    $sum_all = 0;
+    $sum_all_in = 0;
+    $sum_all_out = 0;
 //คณะ // สาขา
-$sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate LEFT JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
+$sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate INNER JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
 $rs_data = $mysqli->query($sql_data);
 $i=1;
 foreach ($rs_data  as  $row_data) {
@@ -252,6 +254,7 @@ $faculty_name =   $row_data['faculty_name'];
     $tatal_ma_out = 0;
     $sum_in_out = 0;
     $tatal_sum_in_out = 0;
+
     //ค่าน้ำหนัก
     $weight_01=0;
     $weight_02=0;
@@ -336,6 +339,8 @@ $faculty_name =   $row_data['faculty_name'];
     $tatal_ma_in = ((int)$tatal_ma_in + (int)$master_in);
     $tatal_ma_out = ((int)$tatal_ma_out + (int)$master_out);
     $tatal_sum_in_out = ((int)$tatal_ma_out + (int)$tatal_ma_in);
+
+ //   echo "<br>";
     //ค่าน้ำหนัก
     // $sum_weight_01 = ((int)$sum_weight_01 + (int)$weight_01);
     // $sum_weight_02 = ((int)$sum_weight_02 + (int)$weight_02);
@@ -403,9 +408,71 @@ $faculty_name =   $row_data['faculty_name'];
     <p>&nbsp;</p>
     </td>
 </tr>';
+
  } //เฉพาะคณะที่มีข้อมูล
+  $sum_all = ($sum_all + $tatal_sum_in_out);
+  $sum_all_in = ($sum_all_in + $tatal_ma_in);
+  $sum_all_out = ($sum_all_out + $tatal_ma_out);
+  $sum_master_in = ($sum_master_in + $master_in);
  }//คณะ
 } //กลุ่ม
+
+$content .='<tr>
+    <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:40px">
+    <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:102px">
+    <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:147px">
+    <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">รวมระดับสถาบัน</span></span></span></span></p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+    <p>'.$sum_all_in.'</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+    <p>'.$sum_all_out.'</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+    <p>'.$sum_all.'</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:60px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:66px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:39px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:57px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:71px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:49px">
+    <p>&nbsp;</p>
+    </td>
+</tr>';
 $content .='</tbody>
 </table>';
 $mpdf->WriteHTML($content);
