@@ -77,7 +77,7 @@ function Count_Major_Master_ThesisIS($major,$thesis_is_type){
 }
 
 $content = '';
-$content .= '<h3 style="text-align: center; vertical-align: middle;">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาโทที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  กค 2566</h3>';
+$content .= '<h3 style="text-align: center; vertical-align: middle;">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาโทที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  มกราคม 2566</h3>';
 $content .= '<table cellspacing="0" class="MsoTableGrid" style="border-collapse:collapse; border:none; margin-left:-18px; width:948px">
 
 <thead style="display: table-header-group;">
