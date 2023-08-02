@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 }
 
 // คำสั่ง SQL สำหรับดึงข้อมูลจากตาราง report_t3_round
-$sql = "SELECT round_name FROM report_t3_round";
+$sql = "SELECT * FROM report_t3_round";
 
 $result = $conn->query($sql);
 ?>
@@ -27,7 +27,6 @@ $result = $conn->query($sql);
 <style>
     body {
     /* กำหนดระยะห่างในทุกทิศทาง 10px */
-    padding: 10px;
     /* กำหนดสีพื้นหลังให้ body (เพื่อเปรียบเทียบตัวอย่าง) */
     background-color: #f0f0f0;
 }
@@ -67,8 +66,8 @@ $result = $conn->query($sql);
 
     <body>
     <div class="custom-div">
-        <form>
-        <select>
+        <form method="post" action="index.php" >
+        <select name="round_id">
         <?php
         // วน loop ในการแสดงตัวเลือก
         if ($result->num_rows > 0) {
@@ -76,16 +75,24 @@ $result = $conn->query($sql);
                 echo "<option value='" . $row["round_id"] . "'>" . $row["round_name"] . "</option>";
             }
         }
+        
         ?>
     </select>
+       <input type="submit" name="submit" value="submit">
         </form>
+        <?php
+            if(isset($_POST['submit'])){
+                echo $id=$_POST['round_id'];
+        ?>
     <ul>
-        <li><a href="cover.php" target="_blank">Export Cover</a></li>
-        <li><a href="t3_details.php" target="_blank">Export Details</a></li>
-        <li><a href="report_master.php" target="_blank">Export Report Master</a></li>
-        <li><a href="report_phd.php" target="_blank">Export Report Doctor</a></li>
+        <li><a href="cover.php?id=<?=$id;?>" target="_blank">Export Cover</a></li>
+        <li><a href="t3_details.php?id=<?=$id;?>" target="_blank">Export Details</a></li>
+        <li><a href="report-master.php?id=<?=$id;?>" target="_blank">Export Report Master</a></li>
+        <li><a href="report-phd.php?id=<?=$id;?>" target="_blank">Export Report Doctor</a></li>
     </ul>
-
+        <?php
+            }
+        ?>
     </div>
 
     <!-- นำเข้าไฟล์ JavaScript ของ Bootstrap ด้านล่างสุดของเอกสาร -->

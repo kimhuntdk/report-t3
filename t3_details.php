@@ -16,6 +16,16 @@ $mpdf = new \Mpdf\Mpdf([
     'default_font_size' => 12, // กำหนดขนาดฟอนต์เริ่มต้นเป็น 12
     'format' => 'A4-L', // กำหนดกระดาษแบบ A4 แนวนอน (Landscape)
 ]);
+//รอบที่เลือก
+$id = $_GET['id'];
+if(!isset($id)){
+    header('location:index.php');
+}
+// ดึงข้อมูลแสดงเดือน
+$sqlround = "SELECT round_name FROM report_t3_round   WHERE round_id=$id  ";
+$rsround =  $mysqli->query($sqlround);
+$rowround = $rsround->fetch_array();
+$mount  = $rowround['round_name'];
 //ดึงข้อมูลตามระดับ
 $sqlDe = "SELECT * FROM report_t3_degree order by degree_id ASC  ";
 $rsDe =  $mysqli->query($sqlDe);
@@ -24,7 +34,7 @@ foreach($rsDe as $rowDe){
 //ข้อมูลมีในระบบ
 $sql = "SELECT *
 FROM report_t3_graduate
-LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' ";
+LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' AND report_t3_graduate.round_id=$id  ";
 $data = $mysqli->query($sql);
 $num_data = $data->num_rows;
 $i=1;
@@ -40,7 +50,7 @@ $content = $css .
      
     // สร้างเนื้อหาของหน้ารายงาน
     $content = '';
-    $content .= "<h2 style='text-align: center; vertical-align: middle;'>รายชื่อนิสิตและบทความวิทยานิพนธ์$rowDe[degree_name]ที่ได้รับการตอบรับหรือตีพิมพ์เผยแพร่ในระดับชาติหรือระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน กรกฏาคม 2566</h2>";
+    $content .= "<h2 style='text-align: center; vertical-align: middle;'>รายชื่อนิสิตและบทความวิทยานิพนธ์$rowDe[degree_name]ที่ได้รับการตอบรับหรือตีพิมพ์เผยแพร่ในระดับชาติหรือระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน $mount</h2>";
     $content .= "<table class='table table-bordered' width='100%' border='1' style='border-collapse: collapse;'>";
     $content .= '<thead style="display: table-header-group;"><tr><th style="width: 5%;">ลำดับ</th><th style="width: 10%;">รหัสนิสิต</th><th style="width: 10%;">ชื่อ-นาสกุล</th><th style="width: 15%;">คณะ/วิทยาลัย/
     สถาบัน</th><th style="width: 15%;">สาขา</th><th>ผลงานตีพิมพ์ที่ผ่านเกณฑ์ตามประกาศมหำวิทยาลัยมหาสารคาม</th><th style="width: 5%;">ฐานข้อมูล</th><th style="width: 10%;"> ค่ำน ำหนัก

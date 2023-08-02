@@ -16,11 +16,21 @@ $mpdf = new \Mpdf\Mpdf([
     'default_font' => 'examplefont', // กำหนดฟอนต์เริ่มต้น
     'format' => 'A4-L', // กำหนดกระดาษแบบ A4 แนวนอน (Landscape)
 ]);
+//รอบที่เลือก
+$id = $_GET['id'];
+if(!isset($id)){
+    header('location:index.php');
+}
+// ดึงข้อมูลแสดงเดือน
+$sqlround = "SELECT round_name FROM report_t3_round   WHERE round_id=$id  ";
+$rsround =  $mysqli->query($sqlround);
+$rowround = $rsround->fetch_array();
+$mount  = $rowround['round_name'];
 //นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก กลุ่มมนุษศาสตร์
-function Count_Faculty_GROUP($faculty,$GROUP){
+function Count_Faculty_GROUP($faculty,$GROUP,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_faculty.faculty_group='$GROUP' AND  report_t3_graduate.faculty_name='$faculty'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
+    $sql_count .= " report_t3_faculty.faculty_group='$GROUP' AND  report_t3_graduate.faculty_name='$faculty' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
    // echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
@@ -28,48 +38,48 @@ function Count_Faculty_GROUP($faculty,$GROUP){
 }
 
 //นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก 
-function Count_Faculty_Master($faculty){
+function Count_Faculty_Master($faculty,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.faculty_name='$faculty'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
+    $sql_count .= " report_t3_graduate.faculty_name='$faculty' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 
 //นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก ในเวลา
-function Count_Major_Master_In($major){
+function Count_Major_Master_In($major,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ'  ";
+    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ'  ";
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 //นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก นอกเวลา
-function Count_Major_Master_Out($major){
+function Count_Major_Master_Out($major,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ'  ";
+    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ'  ";
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 //นับจำนวนค่าน้ำหนักการตีพิมพ์ ปริญญาเอก นอกเวลา
-function Count_Major_Master_weight($major,$weight){
+function Count_Major_Master_weight($major,$weight,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.weight='$weight'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
+    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.weight='$weight' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
     //echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 //นับจำนวนประเภทวิทยานิพนธ์ สารนิพนธ์
-function Count_Major_Master_ThesisIS($major,$thesis_is_type){
+function Count_Major_Master_ThesisIS($major,$thesis_is_type,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate INNER JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
+    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
 
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
@@ -77,7 +87,7 @@ function Count_Major_Master_ThesisIS($major,$thesis_is_type){
 }
 
 $content = '';
-$content .= '<h3 style="text-align: center; vertical-align: middle;">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาเอกที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  มกราคม 2566</h3>';
+$content .= '<h3 style="text-align: center; vertical-align: middle;">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาเอกที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  '.$mount.'</h3>';
 $content .= '<table cellspacing="0" class="MsoTableGrid" style="border-collapse:collapse; border:none; margin-left:-18px; width:948px">
 
 <thead style="display: table-header-group;">
@@ -101,7 +111,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid" style="border-collapse:
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ประเภท</span></span></strong></span></span></p>
         </td>
         <td colspan="7" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:204px">
-        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ผลงานตีพิมพ์ในวงรอบเดือน </span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">xxx ปีการศึกษา 2566</span></span></strong></span></span></p>
+        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ผลงานตีพิมพ์ในวงรอบเดือน </span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$mount.'</span></span></strong></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:57px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ค่าน้ำหนักคุณภาพฯ (</span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">B)</span></span></strong></span></span></p>
@@ -169,7 +179,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid" style="border-collapse:
     </thead>
     <tbody>';
 //กลุ่ม
- $sql_group = "SELECT * FROM report_t3_group INNER JOIN report_t3_faculty ON report_t3_group.group_id =report_t3_faculty.faculty_group  INNER JOIN report_t3_graduate  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY  report_t3_group.group_id ORDER BY report_t3_group.group_id  ASC";
+ $sql_group = "SELECT * FROM report_t3_group INNER JOIN report_t3_faculty ON report_t3_group.group_id =report_t3_faculty.faculty_group  INNER JOIN report_t3_graduate  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) AND report_t3_graduate.round_id=$id  GROUP BY  report_t3_group.group_id ORDER BY report_t3_group.group_id  ASC";
 $rs_group = $mysqli->query($sql_group);
 foreach($rs_group as $row_group){
     $content .='<tr>
@@ -199,13 +209,13 @@ foreach($rs_group as $row_group){
     $sum_weight_08=0;
     $sum_weight_1=0;
 //คณะ // สาขา
-$sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate INNER JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
+$sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate INNER JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=$id  AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
 $rs_data = $mysqli->query($sql_data);
 $i=1;
 foreach ($rs_data  as  $row_data) {
 $faculty_name =   $row_data['faculty_name']; 
 
-  $num_group=Count_Faculty_Master($faculty_name);
+  $num_group=Count_Faculty_Master($faculty_name,$id);
  if($num_group>0){
     
     $content .='<tr>
@@ -264,7 +274,7 @@ $faculty_name =   $row_data['faculty_name'];
         <p>&nbsp;</p>
         </td>
     </tr>';
-     $sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.major_name ";
+     $sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) AND round_id=$id  GROUP BY report_t3_graduate.major_name ";
     $rs_fac  = $mysqli->query($sql_fac);
     $master_in = 0;
     $master_out = 0;
@@ -289,49 +299,49 @@ $faculty_name =   $row_data['faculty_name'];
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$row_fac['major_name'].'</span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
-        <p>'.$master_in=intval(Count_Major_Master_In($row_fac['major_name'])).'</p>
+        <p>'.$master_in=intval(Count_Major_Master_In($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
-        <p>'.$master_out=intval(Count_Major_Master_Out($row_fac['major_name'])).'</p>
+        <p>'.$master_out=intval(Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
-        <p>'.$sum_in_out=intval(Count_Major_Master_In($row_fac['major_name'])+Count_Major_Master_Out($row_fac['major_name'])).'</p>
+        <p>'.$sum_in_out=intval(Count_Major_Master_In($row_fac['major_name'],$id)+Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:30px">';
-              $is   = Count_Major_Master_ThesisIS($row_fac['major_name'],'การศึกษาค้นคว้าอิสระ');
+              $is   = Count_Major_Master_ThesisIS($row_fac['major_name'],'การศึกษาค้นคว้าอิสระ',$id);
        $content .='<p>'.$is.'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:30px">';
-                $thesis = Count_Major_Master_ThesisIS($row_fac['major_name'],'วิทยานิพนธ์');
+                $thesis = Count_Major_Master_ThesisIS($row_fac['major_name'],'วิทยานิพนธ์',$id);
        $content .='<p>'.$thesis.'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
-        <p>&nbsp;'.$weight_01=intval(Count_Major_Master_weight($major,'0.1')).'</p>
+        <p>&nbsp;'.$weight_01=intval(Count_Major_Master_weight($major,'0.1',$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;&nbsp;'.$weight_02=intval(Count_Major_Master_weight($major,'0.2')).'</p>
+        <p>&nbsp;&nbsp;'.$weight_02=intval(Count_Major_Master_weight($major,'0.2',$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;&nbsp;'.$weight_04=Count_Major_Master_weight($major,'0.4').'</p>
+        <p>&nbsp;&nbsp;'.$weight_04=Count_Major_Master_weight($major,'0.4',$id).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;&nbsp;'.$weight_06=Count_Major_Master_weight($major,'0.6').'</p>
+        <p>&nbsp;&nbsp;'.$weight_06=Count_Major_Master_weight($major,'0.6',$id).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
-        <p>&nbsp;&nbsp;'.$weight_08=Count_Major_Master_weight($major,'0.8').'</p>
+        <p>&nbsp;&nbsp;'.$weight_08=Count_Major_Master_weight($major,'0.8',$id).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
-        <p>&nbsp;&nbsp;'.$weight_1=Count_Major_Master_weight($major,'1').'</p>
+        <p>&nbsp;&nbsp;'.$weight_1=Count_Major_Master_weight($major,'1',$id).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:39px">
-        <p>&nbsp;'.intval($weight_08=Count_Major_Master_weight($major,'0.8')+$weight_1=Count_Major_Master_weight($major,'1')).'</p>
+        <p>&nbsp;'.intval($weight_08=Count_Major_Master_weight($major,'0.8',$id)+$weight_1=Count_Major_Master_weight($major,'1',$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:57px">';
         $tatal_sum_wigth=number_format(((int)$weight_01*0.1)+((int)$weight_02*0.2)+((int)$weight_04*0.4)+((int)$weight_06*0.6)+((int)$weight_08*0.8)+((int)$weight_1*1),2);
        $content .='<p>'.$tatal_sum_wigth.'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:71px">';
-        $BC=number_format((((int)$weight_01*0.1)+((int)$weight_02*0.2)+((int)$weight_04*0.4)+((int)$weight_06*0.6)+((int)$weight_08*0.8)+((int)$weight_1*1)*100)/intval(Count_Major_Master_In($row_fac['major_name'])+Count_Major_Master_Out($row_fac['major_name'])),2);
+        $BC=number_format((((int)$weight_01*0.1)+((int)$weight_02*0.2)+((int)$weight_04*0.4)+((int)$weight_06*0.6)+((int)$weight_08*0.8)+((int)$weight_1*1)*100)/intval(Count_Major_Master_In($row_fac['major_name'],$id)+Count_Major_Master_Out($row_fac['major_name'],$id)),2);
        $content .='<p>'.$BC.'</p>
         </td>';
         $num_80 = ($BC*5)/80;

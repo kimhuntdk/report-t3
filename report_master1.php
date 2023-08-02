@@ -198,6 +198,16 @@ foreach($rs_group as $row_group){
     $sum_weight_06=0;
     $sum_weight_08=0;
     $sum_weight_1=0;
+
+    $master_in = 0;
+    $master_out = 0;
+    $tatal_ma_in = 0;
+    $tatal_ma_out = 0;
+    $sum_in_out = 0;
+    $tatal_sum_in_out = 0;
+    $sum_weight_tatal  = 0;
+
+     $tatal_sum_wigth=0;
 //คณะ // สาขา
 $sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate INNER JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
 $rs_data = $mysqli->query($sql_data);
@@ -266,15 +276,7 @@ $faculty_name =   $row_data['faculty_name'];
     </tr>';
      $sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.major_name ";
     $rs_fac  = $mysqli->query($sql_fac);
-    $master_in = 0;
-    $master_out = 0;
-    $tatal_ma_in = 0;
-    $tatal_ma_out = 0;
-    $sum_in_out = 0;
-    $tatal_sum_in_out = 0;
-    $sum_weight_tatal  = 0;
 
-     $tatal_sum_wigth=0;
     $j=1;
     foreach ($rs_fac  as  $row_fac) {
         $major = $row_fac['major_name'];
