@@ -13,7 +13,6 @@ $mpdf = new \Mpdf\Mpdf([
             'U' => 'THSarabunNew BoldItalic.ttf'
         ],
     ],
-    'default_font_size' => 12, // กำหนดขนาดฟอนต์เริ่มต้นเป็น 12
     'format' => 'A4-L', // กำหนดกระดาษแบบ A4 แนวนอน (Landscape)
 ]);
 //รอบที่เลือก
@@ -43,6 +42,18 @@ $css = '
 table {
     font-size: 20px;
 }
+.orange {
+    background-color: orange;
+  }
+  tr:nth-child(odd) {
+    background-color: lightgray;
+  }
+  tr:nth-child(even) {
+    background-color: white; 
+  }  
+    td {
+      font-size: 18px; 
+    }
 </style>';
 
 $content = $css . 
@@ -58,7 +69,7 @@ $content = $css .
     สกอ.</th><th style="width: 10%;">หมายเหตุ
     </th></tr></thead>';
     foreach ($data as $row) {
-    $content .= '<tr><td style="text-align: center; vertical-align: middle;">' . $i . '</td><td style="text-align: center; vertical-align: middle;">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>' . $row['published_work'] . '</td><td>' . $row['database'] . '</td><td style="text-align: center; vertical-align: middle;">' . $row['weight'] . '</td><td>' . $row['note'] . '</td></tr>';
+    $content .= '<tr><td style="text-align: center; vertical-align: middle;">' . $i . '</td><td style="text-align: center; vertical-align: middle; style="font-size:16pt"">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>' . $row['published_work'] . '</td><td>' . $row['database'] . '</td><td style="text-align: center; vertical-align: middle;">' . $row['weight'] . '</td><td>' . $row['note'] . '</td></tr>';
      $i++;  
 
     }

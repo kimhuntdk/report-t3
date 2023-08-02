@@ -82,7 +82,7 @@ $result = $conn->query($sql);
         </form>
         <?php
             if(isset($_POST['submit'])){
-                echo $id=$_POST['round_id'];
+                 $id=$_POST['round_id'];
         ?>
     <ul>
         <li><a href="cover.php?id=<?=$id;?>" target="_blank">Export Cover</a></li>
