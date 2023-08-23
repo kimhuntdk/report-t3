@@ -85,6 +85,16 @@ function Count_Major_Master_ThesisIS($major,$thesis_is_type,$id){
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
+//นับจำนวนทั้งหมด is หรือ thesis 
+function Count_SUM_Master_ThesisIS($thesis_is_type,$id){
+    $mysqli = connect();
+    $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate INNER JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
+    $sql_count .= "   report_t3_graduate.round_id=$id   AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
+
+    $rs_count = $mysqli->query($sql_count);
+    $num_count = $rs_count->num_rows;
+    return $num_count;
+}
 
 $content = '';
 $content = '<style>.textAlignVer{
@@ -126,16 +136,16 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:102px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">คณะ</span></span></strong></span></span></p>
         </td>
-        <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:147px">
+        <td rowspan="3" style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:147px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">สาชาวิชา</span></span></strong></span></span></p>
         </td>
-        <td colspan="2" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:93px">
+        <td colspan="2" style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:93px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ระบบ</span></span></strong></span></span></p>
         </td>
         <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:59px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">รวมสำเร็จการศึกษาทั้งหมด </span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">(A)</span></span></strong></span></span></p>
         </td>
-        <td colspan="2" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:126px">
+        <td colspan="2" style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:126px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ประเภท</span></span></strong></span></span></p>
         </td>
         <td colspan="7" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:204px">
@@ -168,7 +178,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td rowspan="2" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:66px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">วิทยานิพนธ์</span></span></strong></span></span></p>
         </td>
-        <td colspan="6" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:165px">
+        <td colspan="6" style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:165px">
         <p style="margin-right:30px; text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ค่าน้ำหนักตามเกณฑ์</span></span></strong></span></span></p>
 
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">สกอ.</span></span></strong></span></span></p>
@@ -179,25 +189,25 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
        
     </tr>
     <tr>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">0.1</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">0.2</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">0.4</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">0.6</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">0.8</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">1</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; width:39px">&nbsp;</td>
+        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; width:39px">&nbsp;</td>
         
     </tr>
     </thead>
@@ -218,6 +228,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
                 $sum_weight_06=0;
                 $sum_weight_08=0;
                 $sum_weight_1=0;
+                $sum_master_in =0;
 //กลุ่ม
  $sql_group = "SELECT * FROM report_t3_group INNER JOIN report_t3_faculty ON report_t3_group.group_id =report_t3_faculty.faculty_group  INNER JOIN report_t3_graduate  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) AND report_t3_graduate.round_id=$id  GROUP BY  report_t3_group.group_id ORDER BY report_t3_group.group_id  ASC";
 $rs_group = $mysqli->query($sql_group);
@@ -235,7 +246,7 @@ foreach($rs_group as $row_group){
         $sum_is=0;
 
 //คณะ // สาขา
-$sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate INNER JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=$id  AND report_t3_graduate.round_id=1 AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
+ $sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate LEFT JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=$id AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
 $rs_data = $mysqli->query($sql_data);
 $i=1;
 foreach ($rs_data  as  $row_data) {
@@ -324,10 +335,10 @@ $faculty_name =   $row_data['faculty_name'];
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:147px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:16.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$row_fac['major_name'].'</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+        <td style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
         <p>'.$master_in=intval(Count_Major_Master_In($row_fac['major_name'],$id)).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+        <td style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
         <p>'.$master_out=intval(Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
@@ -341,22 +352,22 @@ $faculty_name =   $row_data['faculty_name'];
                 $thesis = Count_Major_Master_ThesisIS($row_fac['major_name'],'วิทยานิพนธ์',$id);
        $content .='<p>'.$thesis.'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:30px">
         <p>&nbsp;'.$weight_01=intval(Count_Major_Master_weight($major,'0.1',$id)).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
         <p>&nbsp;&nbsp;'.$weight_02=intval(Count_Major_Master_weight($major,'0.2',$id)).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
         <p>&nbsp;&nbsp;'.$weight_04=Count_Major_Master_weight($major,'0.4',$id).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
         <p>&nbsp;&nbsp;'.$weight_06=Count_Major_Master_weight($major,'0.6',$id).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:29px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
         <p>&nbsp;&nbsp;'.$weight_08=Count_Major_Master_weight($major,'0.8',$id).'</p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:21px">
         <p>&nbsp;&nbsp;'.$weight_1=Count_Major_Master_weight($major,'1',$id).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:39px">
@@ -457,12 +468,14 @@ $faculty_name =   $row_data['faculty_name'];
 $sum_all = ($sum_all + $tatal_sum_in_out);
 $sum_all_in = ($sum_all_in + $tatal_ma_in);
 $sum_all_out = ($sum_all_out + $tatal_ma_out);
-$sum_master_in = ($sum_master_in + $master_in);
+$sum_master_in = ($sum_master_in + $sum_thesis);
+$sum_thesis_all = ($sum_thesis_all + $sum_thesis);
  } //เฉพาะคณะที่มีข้อมูล
  
  }//คณะ
 } //กลุ่ม
-
+$sum_thesis_all_butom =Count_SUM_Master_ThesisIS('วิทยานิพนธ์',$id);
+$sum_is_all_butom =Count_SUM_Master_ThesisIS('การศึกษาค้นคว้าอิสระ',$id);
 $content .='<tr>
     <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:40px">
     <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
@@ -483,10 +496,10 @@ $content .='<tr>
     <p>'.$sum_all.'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:60px">
-    <p>'.$sum_is.'</p>
+    <p>'.$sum_is_all_butom.'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:66px">
-    <p>'.$sum_thesis.'</p>
+    <p>'.$sum_thesis_all_butom.'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:30px">
     <p>'.$sum_weight_01.'</p>
@@ -518,13 +531,13 @@ $content .='<tr>
     $content .= '<p>'.number_format($c_100,2).'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:49px">';
-    $C5num_40 = ($c_100*5)/40;
-    if($C5num_40>=5){
-        $C5num_40 = 5;  
+    $C5num_80 = ($c_100*5)/80;
+    if($C5num_80>=5){
+        $C5num_80 = 5;  
     }else{
-        $C5num_40;
+        $C5num_80;
     }
-    $content .='<p>'.number_format($C5num_40,2).'</p>
+    $content .='<p>'.number_format($C5num_80,2).'</p>
     </td>
 </tr>';
 $content .='</tbody>

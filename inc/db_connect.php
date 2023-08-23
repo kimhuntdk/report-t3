@@ -122,7 +122,7 @@ function thaiDate($datetime) {
 
 function DateThai1($strDate)
 {
-    $strYear = date("Y",strtotime($strDate))+543;
+    $strYear = date("Y",strtotime($strDate));
     $strMonth= date("n",strtotime($strDate));
     $strDay= date("j",strtotime($strDate));
     $strHour= date("H",strtotime($strDate));
@@ -130,7 +130,7 @@ function DateThai1($strDate)
     $strSeconds= date("s",strtotime($strDate));
     $strMonthCut = Array("","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม");
     $strMonthThai=$strMonthCut[$strMonth];
-    return "วันที่ $strDay $strMonthThai $strYear, เวลา $strHour:$strMinute";
+    return "วันที่ $strDay $strMonthThai $strYear";
 }
 
 function date_format_convert($date_get){

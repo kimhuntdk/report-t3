@@ -33,7 +33,7 @@ foreach($rsDe as $rowDe){
 //ข้อมูลมีในระบบ
 $sql = "SELECT *
 FROM report_t3_graduate
-LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' AND report_t3_graduate.round_id=$id  ";
+LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' AND report_t3_graduate.round_id=$id GROUP BY report_t3_graduate.major_name ";
 $data = $mysqli->query($sql);
 $num_data = $data->num_rows;
 $i=1;
@@ -51,9 +51,7 @@ table {
   tr:nth-child(even) {
     background-color: white; 
   }  
-    td {
-      font-size: 18px; 
-    }
+
 </style>';
 
 $content = $css . 
@@ -69,7 +67,7 @@ $content = $css .
     สกอ.</th><th style="width: 10%;">หมายเหตุ
     </th></tr></thead>';
     foreach ($data as $row) {
-    $content .= '<tr><td style="text-align: center; vertical-align: middle;">' . $i . '</td><td style="text-align: center; vertical-align: middle; style="font-size:16pt"">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>' . $row['published_work'] . '</td><td>' . $row['database'] . '</td><td style="text-align: center; vertical-align: middle;">' . $row['weight'] . '</td><td>' . $row['note'] . '</td></tr>';
+    $content .= '<tr><td style="text-align: center; vertical-align: middle; height: 150px;"><h4>' . $i . '</h4></td><td style="text-align: center; vertical-align: middle; style="font-size:20pt"">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>' . $row['published_work'] . '</td><td>' . $row['database'] . '</td><td style="text-align: center; vertical-align: middle;">' . $row['weight'] . '</td><td>' . $row['note'] . '</td></tr>';
      $i++;  
 
     }
@@ -94,9 +92,9 @@ $content = $css .
 //     $current_page = $page; // เก็บค่าหน้าปัจจุบันในตัวแปร $current_page
 // }
 $mpdf->WriteHTML($content);
-//echo 'จำนวนแถวที่เหลือ: ' . $remainingLines;
-}
 
+//echo 'จำนวนแถวที่เหลือ: ' . $remainingLines;
+} 
 $mpdf->Output();
 
 ?>
