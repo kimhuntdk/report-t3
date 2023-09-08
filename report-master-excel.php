@@ -1,21 +1,24 @@
 <?php
+header("Content-Type: application/xls");
+header("Content-Disposition: attachment; filename=export.xls");
+header("Pragma: no-cache");
+header("Expires: 0");
 require_once( "inc/db_connect.php" );
 $mysqli = connect();
-require_once __DIR__ . '/vendor/autoload.php';
+// require_once __DIR__ . '/vendor/autoload.php';
 
-$mpdf = new \Mpdf\Mpdf([
-    'fontDir' => __DIR__ . '/vendor/fonts/', // ตั้งค่าโฟลเดอร์ที่เก็บไฟล์ฟอนต์
-    'fontdata' => [
-        'examplefont' => [
-            'R' => 'THSarabunNew.ttf',
-            'I' => 'THSarabunNew Italic.ttf',
-            'B' => 'THSarabunNew Bold.ttf',
-            'U' => 'THSarabunNew BoldItalic.ttf'
-        ],
-    ],
-    'default_font' => 'examplefont', // กำหนดฟอนต์เริ่มต้น
-    'format' => 'A4-L', // กำหนดกระดาษแบบ A4 แนวนอน (Landscape)
-]);
+// $mpdf = new \Mpdf\Mpdf([
+//     'fontDir' => __DIR__ . '/vendor/fonts/', // ตั้งค่าโฟลเดอร์ที่เก็บไฟล์ฟอนต์
+//     'fontdata' => [
+//         'examplefont' => [
+//             'R' => 'THSarabunNew.ttf',
+//             'I' => 'THSarabunNew Italic.ttf',
+//             'B' => 'THSarabunNew Bold.ttf',
+//             'U' => 'THSarabunNew BoldItalic.ttf'
+//         ],
+//     ],
+//     'format' => 'A4-L', // กำหนดกระดาษแบบ A4 แนวนอน (Landscape)
+// ]);
 //รอบที่เลือก
 $id = $_GET['id'];
 if(!isset($id)){
@@ -26,51 +29,54 @@ $sqlround = "SELECT round_name FROM report_t3_round   WHERE round_id=$id  ";
 $rsround =  $mysqli->query($sqlround);
 $rowround = $rsround->fetch_array();
 $mount  = $rowround['round_name'];
-//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก กลุ่มมนุษศาสตร์
+//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาโท กลุ่มมนุษศาสตร์
 function Count_Faculty_GROUP($faculty,$GROUP,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_faculty.faculty_group='$GROUP' AND  report_t3_graduate.faculty_name='$faculty' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
+    $sql_count .= " report_t3_faculty.faculty_group='$GROUP' AND  report_t3_graduate.faculty_name='$faculty' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
    // echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 
-//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก 
+//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาโท 
 function Count_Faculty_Master($faculty,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.faculty_name='$faculty' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
+    $sql_count .= " report_t3_graduate.faculty_name='$faculty' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name ";
+    //echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
 
-//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก ในเวลา
+//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาโท ในเวลา
 function Count_Major_Master_In($major,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' GROUP BY report_t3_graduate.std_id ";
+    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ'  ";
+    // $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
-//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาเอก นอกเวลา
+//นับจำนวนว่ามีข้อมูลในกลุ่มหรือไม่ ปริญญาโท นอกเวลา
 function Count_Major_Master_Out($major,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' GROUP BY report_t3_graduate.std_id ";
+    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ'  ";
+   // echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
 }
-//นับจำนวนค่าน้ำหนักการตีพิมพ์ ปริญญาเอก นอกเวลา
+//นับจำนวนค่าน้ำหนักการตีพิมพ์ ปริญญาโท นอกเวลา
 function Count_Major_Master_weight($major,$weight,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.weight='$weight' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) ";
-    //echo $sql_count;
+    $sql_count .= " report_t3_graduate.major_name='$major'  AND report_t3_graduate.weight='$weight' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) ";
+   // echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
@@ -79,8 +85,8 @@ function Count_Major_Master_weight($major,$weight,$id){
 function Count_Major_Master_ThesisIS($major,$thesis_is_type,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate INNER JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.std_id ";
-
+    $sql_count .= " report_t3_graduate.major_name='$major' AND report_t3_graduate.round_id=$id   AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) ";
+   // echo $sql_count;
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
     return $num_count;
@@ -89,7 +95,7 @@ function Count_Major_Master_ThesisIS($major,$thesis_is_type,$id){
 function Count_SUM_Master_ThesisIS($thesis_is_type,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate INNER JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
-    $sql_count .= "   report_t3_graduate.round_id=$id   AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.std_id  ";
+    $sql_count .= "   report_t3_graduate.round_id=$id   AND report_t3_graduate.thesis_is_type='$thesis_is_type'  AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) ";
 
     $rs_count = $mysqli->query($sql_count);
     $num_count = $rs_count->num_rows;
@@ -118,14 +124,14 @@ $content = '<style>.textAlignVer{
     }
     tr:nth-child(even) {
       background-color: white; 
-    }
-    body {
-        font-size: 18px; 
+    }   body {
+        font-size: 16px; 
       }
       td {
-        font-size: 20px; 
-      }</style>';
-$content .= '<h3 style="text-align: center; vertical-align: middle;font-size: 20px; ">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาเอกที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  '.$mount.'</h3>';
+        font-size: 14px; 
+      }
+</style>';
+$content .= '<h3 style="text-align: center; vertical-align: middle;font-size: 22px; ">สรุปจำนวนนิสิตและบทความวิทยานิพนธ์ปริญญาโทที่ตีพิมพ์เผยแพร่ในระดับชาติและระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน  '.$mount.'</h3>';
 $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" style="border-collapse:collapse;  border:none; margin-left:-18px; width:948px">
 
 <thead style="display: table-header-group; background-color: orange;">
@@ -136,11 +142,11 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:102px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">คณะ</span></span></strong></span></span></p>
         </td>
-        <td rowspan="3" style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:147px">
+        <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:147px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">สาชาวิชา</span></span></strong></span></span></p>
         </td>
-        <td colspan="2" style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:93px">
-        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ระบบ</span></span></strong></span></span></p>
+        <td colspan="2" style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:93px">
+        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot; text-align: center; vertical-align: middle;  ">ระบบ</span></span></strong></span></span></p>
         </td>
         <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:59px">
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">รวมสำเร็จการศึกษาทั้งหมด </span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">(A)</span></span></strong></span></span></p>
@@ -162,7 +168,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td rowspan="3" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:49px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">คะแนนตามเกณฑ์ สกอ</span></span></strong></span></span></p>
 
-        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">(</span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">C*5)/80</span></span></strong></span></span></p>
+        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">(</span></span></strong><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">C*5)/40</span></span></strong></span></span></p>
         </td>
     </tr>
     <tr style="background-color: lightgray;">
@@ -175,10 +181,10 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td rowspan="2" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:60px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">การศึกษาค้นคว้าอิสระ</span></span></strong></span></span></p>
         </td>
-        <td rowspan="2" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:66px">
+        <td rowspan="2" class="textAlignVer" style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:66px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">วิทยานิพนธ์</span></span></strong></span></span></p>
         </td>
-        <td colspan="6" style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:165px">
+        <td colspan="6" style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:165px">
         <p style="margin-right:30px; text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">ค่าน้ำหนักตามเกณฑ์</span></span></strong></span></span></p>
 
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><strong><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">สกอ.</span></span></strong></span></span></p>
@@ -186,7 +192,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:39px">
         <p style="text-align:center"><b>รวม</b></p>
         </td>
-       
+        
     </tr>
     <tr>
         <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:30px">
@@ -207,7 +213,7 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
         <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; vertical-align:top; width:21px">
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">1</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; border-left:none; text-align: center; vertical-align: middle;  border-right:1px solid black; border-top:none; width:39px">&nbsp;</td>
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; width:39px">&nbsp;</td>
         
     </tr>
     </thead>
@@ -228,16 +234,14 @@ $content .= '<table cellspacing="0" class="MsoTableGrid table table-striped" sty
                 $sum_weight_06=0;
                 $sum_weight_08=0;
                 $sum_weight_1=0;
-                $sum_master_in =0;
-                $sum_weight_1_1 = 0;
-    
+                $sum_master_in=0;
 //กลุ่ม
- $sql_group = "SELECT * FROM report_t3_group INNER JOIN report_t3_faculty ON report_t3_group.group_id =report_t3_faculty.faculty_group  INNER JOIN report_t3_graduate  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) AND report_t3_graduate.round_id=$id  GROUP BY  report_t3_group.group_id ORDER BY report_t3_group.group_id  ASC";
+ $sql_group = "SELECT * FROM report_t3_group INNER JOIN report_t3_faculty ON report_t3_group.group_id =report_t3_faculty.faculty_group  INNER JOIN report_t3_graduate  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) AND report_t3_graduate.round_id=$id  GROUP BY  report_t3_group.group_id ORDER BY report_t3_group.group_id  ASC";
 $rs_group = $mysqli->query($sql_group);
 foreach($rs_group as $row_group){
     $content .='<tr>
         <td colspan="18" style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:948px">
-        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"><h3>'.$row_group['group_name'].'</h3></span></span></span></span></p>
+        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"><h3>'.$row_group['group_name'].'</h3></span></span></span></span></p>
         </td>
     </tr>';
 
@@ -248,9 +252,10 @@ foreach($rs_group as $row_group){
         $sum_is=0;
 
 //คณะ // สาขา
- $sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate LEFT JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=$id AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
+ $sql_data = "SELECT report_t3_graduate.faculty_name FROM report_t3_graduate INNER JOIN report_t3_faculty  ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th  WHERE report_t3_faculty.faculty_group='$row_group[group_id]' AND report_t3_graduate.round_id=$id   AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) GROUP BY report_t3_graduate.faculty_name";
 $rs_data = $mysqli->query($sql_data);
 $i=1;
+//echo "<br>";
 foreach ($rs_data  as  $row_data) {
 $faculty_name =   $row_data['faculty_name']; 
 
@@ -259,13 +264,13 @@ $faculty_name =   $row_data['faculty_name'];
     
     $content .='<tr>
         <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:40px">
-        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$i.'</span></span></span></span></p>
+        <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$i.'</span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:102px">
-        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:16.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$faculty_name.'</span></span></span></span></p>
+        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$faculty_name.'</span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:147px">
-        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
+        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:57px">
         <p>&nbsp;</p>
@@ -313,26 +318,18 @@ $faculty_name =   $row_data['faculty_name'];
         <p>&nbsp;</p>
         </td>
     </tr>';
-     $sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาเอก ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาเอก ระบบนอกเวลาราชการ' ) AND round_id=$id  GROUP BY report_t3_graduate.major_name ";
+      $sql_fac = "SELECT * FROM report_t3_graduate WHERE faculty_name='$faculty_name' AND (report_t3_graduate.degree_name='ปริญญาโท ระบบในเวลาราชการ' OR report_t3_graduate.degree_name='ปริญญาโท ระบบนอกเวลาราชการ' ) AND round_id=$id  GROUP BY report_t3_graduate.major_name ";
     $rs_fac  = $mysqli->query($sql_fac);
     $master_in = 0;
     $master_out = 0;
     $tatal_ma_in = 0;
     $tatal_ma_out = 0;
     $sum_in_out = 0;
+    
     $tatal_sum_in_out = 0;
     $sum_weight_tatal  = 0;
-    $tatal_sum_wigth_faculty =0;
+
      $tatal_sum_wigth=0;
-     //
-     $sum_weight_1_1 = 0;
-     $sum_weight_08_1  = 0;
-     $sum_weight_06_1  = 0;
-     $sum_weight_04_1  = 0;
-     $sum_weight_02_1  = 0;
-     $sum_weight_01_1  = 0;
-     //
-     $talal_thesis = 0;
     $j=1;
     foreach ($rs_fac  as  $row_fac) {
         $major = $row_fac['major_name'];
@@ -341,15 +338,15 @@ $faculty_name =   $row_data['faculty_name'];
         <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:102px">
-        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
+        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:147px">
-        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:16.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$row_fac['major_name'].'</span></span></span></span></p>
+        <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$row_fac['major_name'].'</span></span></span></span></p>
         </td>
-        <td style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
         <p>'.$master_in=intval(Count_Major_Master_In($row_fac['major_name'],$id)).'</p>
         </td>
-        <td style="border-bottom:1px solid black; text-align: center; vertical-align: middle;  border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
+        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
         <p>'.$master_out=intval(Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
@@ -393,7 +390,7 @@ $faculty_name =   $row_data['faculty_name'];
         $BC=number_format(($tatal_sum_wigth/$tt_)*100,2);
        $content .='<p>'.$BC.'</p>
         </td>';
-        $num_40 = ($BC*5)/80;
+        $num_40 = ($BC*5)/40;
         if($num_40>=5){
             $num_40 = 5;  
         }else{
@@ -416,19 +413,6 @@ $faculty_name =   $row_data['faculty_name'];
     $sum_weight_06 = ((int)$sum_weight_06 + (int)$weight_06);
     $sum_weight_08 = ((int)$sum_weight_08 + (int)$weight_08);
     $sum_weight_1 = ((int)$sum_weight_1 + (int)$weight_1);
-    //รวมวิทยาลัยแยก การศึกษา
-    $talal_is = $talal_is + $is; 
-    $talal_thesis = $talal_thesis + $thesis;
-
-    //หาค่ารวม แยกตามคณะ
-     $sum_weight_1_1 = ((int)$sum_weight_1_1 + (int)$weight_1);
-     $sum_weight_08_1 = ((int)$sum_weight_08_1 + (int)$weight_08);
-     $sum_weight_06_1 = ((int)$sum_weight_06_1 + (int)$weight_06);
-     $sum_weight_04_1 = ((int)$sum_weight_04_1 + (int)$weight_04);
-     $sum_weight_02_1 = ((int)$sum_weight_02_1 + (int)$weight_02);
-     $sum_weight_01_1 = ((int)$sum_weight_01_1 + (int)$weight_01);
-     $tatal_sum_wigth_faculty = ((float)$tatal_sum_wigth_faculty + (float)$tatal_sum_wigth);
-     $sum_weigth_01_2_4_6_8_1 = $sum_weight_1_1+$sum_weight_08_1+$sum_weight_06_1+$sum_weight_04_1+$sum_weight_02_1+$sum_weight_01_1;
     }//สาขา
 
     $i++;//นับลำดับคณะ
@@ -441,7 +425,7 @@ $faculty_name =   $row_data['faculty_name'];
     <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif"></span></span></span></span></p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:147px">
-    <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:16.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">รวม</span></span></span></span></p>
+    <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">รวม</span></span></span></span></p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
     <p>'.$tatal_ma_in.'</p>
@@ -452,55 +436,48 @@ $faculty_name =   $row_data['faculty_name'];
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
     <p>'.$tatal_sum_in_out.'</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:60px">
-    <p>'.$talal_is.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:60px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:66px">
-    <p>'.$talal_thesis.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:66px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:30px">
-    <p>'.$sum_weight_01_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:30px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:29px">
-    <p>'.$sum_weight_02_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:29px">
-    <p>'.$sum_weight_04_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:29px">
-    <p>'.$sum_weight_06_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:29px">
-    <p>'.$sum_weight_08_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:29px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:21px">
-    <p>'.$sum_weight_1_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:21px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle;  width:39px">
-    <p>'.$sum_weigth_01_2_4_6_8_1.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:39px">
+    <p>&nbsp;</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; vertical-align:top; text-align: center; vertical-align: middle; width:57px">
-    <p>'.number_format($tatal_sum_wigth_faculty,2).'</p>
-    </td>';
-    $b_a100 = (($tatal_sum_wigth_faculty/$tatal_sum_in_out)*100);
-   $content .='<td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:71px">
-    <p>'.number_format($b_a100,2).'</p>
-    </td>';
-    $c_5_80 = (($b_a100*5)/80);
-    if($c_5_80>=5){
-        $c_5_80 = 5;  
-    }else{
-        $c_5_80;
-    }
-    $content .='<td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:49px">
-    <p>'.number_format($c_5_80,2).'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:57px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:71px">
+    <p>&nbsp;</p>
+    </td>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:49px">
+    <p>&nbsp;</p>
     </td>
 </tr>';
 $sum_all = ($sum_all + $tatal_sum_in_out);
 $sum_all_in = ($sum_all_in + $tatal_ma_in);
 $sum_all_out = ($sum_all_out + $tatal_ma_out);
-$sum_master_in = ($sum_master_in + $sum_thesis);
-//$sum_thesis_all = ($sum_thesis_all + $sum_thesis);
+$sum_master_in= ($sum_all_out + $tatal_ma_out);
+//echo 'รวม'.$sum_master_in.'  '.$sum_master_in;
  } //เฉพาะคณะที่มีข้อมูล
  
  }//คณะ
@@ -550,12 +527,11 @@ $content .='<tr>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top;  text-align: center; vertical-align: middle; width:21px">
     <p>'.$sum_weight_1.'</p>
     </td>
-    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:39px">';
-    $sum_all_ = $sum_weight_01+$sum_weight_02+$sum_weight_04+$sum_weight_06+$sum_weight_08+$sum_weight_1;
-    $content.='<p>&nbsp;'.$sum_all_.'</p>
+    <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:39px">
+    <p>&nbsp;'.$sum_all.'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:57px">';
-    $sum_weight_tatal =($sum_weight_01*0.1)+($sum_weight_02*0.2)+($sum_weight_04*0.4)+($sum_weight_06*0.6)+($sum_weight_08*0.8)+($sum_weight_1*1);
+     $sum_weight_tatal =($sum_weight_01*0.1)+($sum_weight_02*0.2)+($sum_weight_04*0.4)+($sum_weight_06*0.6)+($sum_weight_08*0.8)+($sum_weight_1*1);
    $content .='<p>'.number_format($sum_weight_tatal,2).'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:71px">';
@@ -563,25 +539,47 @@ $content .='<tr>
     $content .= '<p>'.number_format($c_100,2).'</p>
     </td>
     <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:49px">';
-    $C5num_80 = ($c_100*5)/80;
-    if($C5num_80>=5){
-        $C5num_80 = 5;  
+    $C5num_40 = ($c_100*5)/40;
+    if($C5num_40>=5){
+        $C5num_40 = 5;  
     }else{
-        $C5num_80;
+        $C5num_40;
     }
-    $content .='<p>'.number_format($C5num_80,2).'</p>
+    $content .='<p>'.number_format($C5num_40,2).'</p>
     </td>
 </tr>';
 $content .='</tbody>
 </table>';
-$mpdf->WriteHTML($content);
+echo $content;
+//$mpdf->WriteHTML($content);
 //echo 'จำนวนแถวที่เหลือ: ' . $remainingLines;
-$mpdf->Output();
+//$mpdf->Output();
 
 ?>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <style type="text/css">
+.textAlignVer{
+    display:block;
+    filter: flipv fliph;
+    -webkit-transform: rotate(-90deg); 
+    -moz-transform: rotate(-90deg); 
+    transform: rotate(-90deg); 
+    position:relative;
+    width:20px;
+    white-space:nowrap;
+    font-size:12px;
+    margin-bottom:10px;
+}
 
+.orange {
+      background-color: orange;
+    }
+    tr:nth-child(odd) {
+      background-color: lightgray; /* แถวคี่ สีเทา */
+    }
+    tr:nth-child(even) {
+      background-color: white; /* แถวคู่ สีขาว */
+    }
 </style>
 

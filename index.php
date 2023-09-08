@@ -67,7 +67,7 @@ $result = $conn->query($sql);
     <body>
     <div class="custom-div">
         <form method="post" action="index.php" >
-        <select name="round_id">
+        <select name="round_id" id="round_id" multiple>
         <?php
         // วน loop ในการแสดงตัวเลือก
         if ($result->num_rows > 0) {
@@ -75,29 +75,33 @@ $result = $conn->query($sql);
                 echo "<option value='" . $row["round_id"] . "'>" . $row["round_name"] . "</option>";
             }
         }
+
+        
         
         ?>
     </select>
-       <input type="submit" name="submit" value="submit">
+       <!-- <input type="submit" name="submit" value="submit"> -->
         </form>
-        <?php
-            if(isset($_POST['submit'])){
-                 $id=$_POST['round_id'];
-        ?>
-    <ul>
-        <li><a href="cover.php?id=<?=$id;?>" target="_blank">Export Cover</a></li>
-        <li><a href="t3_details.php?id=<?=$id;?>" target="_blank">Export Details</a></li>
-        <li><a href="report-master.php?id=<?=$id;?>" target="_blank">Export Report Master</a></li>
-        <li><a href="report-phd.php?id=<?=$id;?>" target="_blank">Export Report Doctor</a></li>
-    </ul>
-        <?php
-            }
-        ?>
+        <span id="show"></span>
+        <span id="menu"></span>
+   
     </div>
 
     <!-- นำเข้าไฟล์ JavaScript ของ Bootstrap ด้านล่างสุดของเอกสาร -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $( "#round_id" ).on( "change", function() {
+            var name =  $( "#round_id option:selected" ).text();
+            var selectedRoundIds = []; // สร้างอาร์เรย์เพื่อเก็บค่าที่ถูกเลือก
+
+            $("#round_id option:selected").each(function() {
+                selectedRoundIds.push($(this).val()); // เพิ่มค่าที่ถูกเลือกเข้าไปในอาร์เรย์
+            });
+            $("#show").html(name);
+            $("#menu").html('<ul><li><a href="cover.php?id='+selectedRoundIds+'" target="_blank">Export Cover</a></li><li><a href="t3_details.php?id='+selectedRoundIds+'" target="_blank">Export Details</a></li><li><a href="report-master.php?id='+selectedRoundIds+'" target="_blank">Export Report Master</a></li><li><a href="report-phd.php?id='+selectedRoundIds+'" target="_blank">Export Report Doctor</a></li></ul>');
+            } );
+    </script>
 </body>
 </html>

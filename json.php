@@ -1,24 +1,25 @@
 <?php
+
 require_once( "inc/db_connect.php" );
 $mysqli = connect();
-require_once __DIR__ . '/vendor/autoload.php';
+// require_once __DIR__ . '/vendor/autoload.php';
 
-$mpdf = new \Mpdf\Mpdf([
-    'fontDir' => __DIR__ . '/vendor/fonts/', // ตั้งค่าโฟลเดอร์ที่เก็บไฟล์ฟอนต์
-    'fontdata' => [
-        'examplefont' => [
-            'R' => 'THSarabunNew.ttf',
-            'I' => 'THSarabunNew Italic.ttf',
-            'B' => 'THSarabunNew Bold.ttf',
-            'U' => 'THSarabunNew BoldItalic.ttf'
-        ],
-    ],
-    'default_font' => 'examplefont', // กำหนดฟอนต์เริ่มต้น
-]);
+// $mpdf = new \Mpdf\Mpdf([
+//     'fontDir' => __DIR__ . '/vendor/fonts/', // ตั้งค่าโฟลเดอร์ที่เก็บไฟล์ฟอนต์
+//     'fontdata' => [
+//         'examplefont' => [
+//             'R' => 'THSarabunNew.ttf',
+//             'I' => 'THSarabunNew Italic.ttf',
+//             'B' => 'THSarabunNew Bold.ttf',
+//             'U' => 'THSarabunNew BoldItalic.ttf'
+//         ],
+//     ],
+//     'default_font' => 'examplefont', // กำหนดฟอนต์เริ่มต้น
+// ]);
 //รอบที่เลือก
 $id = $_GET['id'];
 if(!isset($id)){
-    header('location:index.php');
+   // header('location:index.php');
 }
 function count_degree($degree_name,$id){
     $mysqli = connect();
@@ -36,9 +37,9 @@ foreach($rsDe as $rowDe){
 
   $numddd = count_degree($rowDe['degree_name'],$id);
 //ข้อมูลมีในระบบ
- $sql = "SELECT *
+  $sql = "SELECT  JSON_EXTRACT(json_data, '$.std_id') AS std_id
 FROM report_t3_graduate
-LEFT JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' AND report_t3_graduate.round_id IN ($id) GROUP BY report_t3_graduate.major_name,report_t3_graduate.std_id ";
+INNER JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' AND report_t3_graduate.round_id IN ($id) GROUP BY report_t3_graduate.major_name ";
 $data = $mysqli->query($sql);
 $row_data_1 = $data->fetch_array();
 $num_data = $data->num_rows;
@@ -48,21 +49,26 @@ $i=1;
     
     // สร้างเนื้อหาของหน้ารายงาน
     
-    $content = '';
-    $content .= "<h3>$rowDe[degree_name]</h3>";
-    $content .= "<table class='table table-bordered' width='100%' border='1' style='border-collapse: collapse;'>";
-    $content .= '<thead style="display: table-header-group;"><tr><th style="width: 5%;">ลำดับ</th><th style="width: 10%;">รหัสนิสิต</th><th style="width: 10%;">ชื่อ-นาสกุล</th><th style="width: 15%;">คณะ/วิทยาลัย/
-    สถาบัน</th><th style="width: 15%;">สาขา</th><th style="width: 5%;">ฐานข้อมูล</th><th style="width: 10%;">อนุมัติเล่ม</th><th style="width: 10%;">English
-    Test</th></tr></thead>';
-    foreach ($data as $row) {
-    $content .= '<tr><td style="text-align: center; vertical-align: middle;">' . $i . '</td><td style="text-align: center; vertical-align: middle;">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>' . $row['database'] . '</td><td style="text-align: center; vertical-align: middle;">' . DateThai1($row['approval_date']) . '</td><td style="text-align: center; vertical-align: middle;">' . $row['exam_eng'] . '</td></tr>';
-     $i++;  
+    //$content = '';
+    // $content .= "<h3>$rowDe[degree_name]</h3>";
+    // $content .= "<table class='table table-bordered' width='100%' border='1' style='border-collapse: collapse;'>";
+    // $content .= '<thead style="display: table-header-group;"><tr><th style="width: 5%;">ลำดับ</th><th style="width: 10%;">รหัสนิสิต</th><th style="width: 10%;">ชื่อ-นาสกุล</th><th style="width: 15%;">คณะ/วิทยาลัย/
+    // สถาบัน</th><th style="width: 15%;">สาขา</th><th style="width: 5%;">ฐานข้อมูล</th><th style="width: 10%;">อนุมัติเล่ม</th><th style="width: 10%;">English
+    // Test</th></tr></thead>';
+    // foreach ($data as $row) {
+    // $content .= '<tr><td style="text-align: center; vertical-align: middle;">' . $i . '</td><td style="text-align: center; vertical-align: middle;">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>' . $row['database'] . '</td><td style="text-align: center; vertical-align: middle;">' . DateThai1($row['approval_date']) . '</td><td style="text-align: center; vertical-align: middle;">' . $row['exam_eng'] . '</td></tr>';
+    //  $i++;  
 
-    }
+    // }
 
-    $content .= '</table>';
+    // $content .= '</table>';
 
+   //echo $content; 
 
+   foreach ($data as $row) {
+      echo $row['std_id'];
+   
+   }
 
 // แสดงหัวตารางในทุกหน้าที่มีข้อมูล
 
@@ -82,11 +88,11 @@ $i=1;
 //     // แสดงหมายเลขหน้า
 //     $current_page = $page; // เก็บค่าหน้าปัจจุบันในตัวแปร $current_page
 // }
-$mpdf->WriteHTML($content);
+//$mpdf->WriteHTML($content);
 //echo 'จำนวนแถวที่เหลือ: ' . $remainingLines;
 }
 
-$mpdf->Output();
+//$mpdf->Output();
 
 ?>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
