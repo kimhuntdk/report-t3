@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/msword");
-header('Content-Disposition: attachment; filename="filename.doc"');
+header('Content-Disposition: attachment; filename="cover-word.doc"');
 require_once( "inc/db_connect.php" );
 $mysqli = connect();
 // require_once __DIR__ . '/vendor/autoload.php';
@@ -38,7 +38,7 @@ foreach($rsDe as $rowDe){
 
   $numddd = count_degree($rowDe['degree_name'],$id);
 //ข้อมูลมีในระบบ
- echo $sql = "SELECT *
+  $sql = "SELECT *
 FROM report_t3_graduate
 INNER JOIN report_t3_registration ON report_t3_graduate.std_id = report_t3_registration.std_id WHERE  report_t3_graduate.degree_name='$rowDe[degree_name]' AND report_t3_graduate.round_id IN ($id) GROUP BY report_t3_graduate.major_name ";
 $data = $mysqli->query($sql);
@@ -97,7 +97,10 @@ $i=1;
    </thead>
    <tbody>';
    foreach ($data as $row) {
-
+     $sql_count_tci = "SELECT * FROM report_t3_graduate WHERE std_id='$row[std_id]' ";
+     $rs_count_tci = $mysqli->query($sql_count_tci);
+    $row_count_tci = $rs_count_tci->fetch_array();
+    $num_data_tcci = $rs_count_tci->num_rows;
      $content.='<tr>
            <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none">
            <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'. $i .'</span></span></span></span></p>
@@ -115,7 +118,7 @@ $i=1;
            <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">' . $row['major_name'] . '</span></span></span></span></p>
            </td>
            <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none">
-           <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">' . $row['database'] . '</span></span></span></span></p>
+           <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">' . $row['database'].$num_data_tcci . '</span></span></span></span></p>
            </td>
            <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none">
            <p style="text-align:center"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">วันที่ </span></span><span style="font-size:12.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">21 มกราคม 2023</span></span></span></span></p>

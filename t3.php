@@ -1,4 +1,10 @@
 <?php
+// header("Content-Type: application/msword");
+// header('Content-Disposition: attachment; filename="cover-word.doc"');
+header("Content-Type: application/xls");
+		header("Content-Disposition: attachment; filename=export.xls");
+		header("Pragma: no-cache");
+		header("Expires: 0");
 require_once( "inc/db_connect.php" );
 $mysqli = connect();
 require_once __DIR__ . '/vendor/autoload.php';
@@ -13,13 +19,17 @@ $mpdf = new \Mpdf\Mpdf([
             'U' => 'THSarabunNew BoldItalic.ttf'
         ],
     ],
-    'default_font' => 'examplefont', // กำหนดฟอนต์เริ่มต้น
+    'format' => 'A4-L', // กำหนดกระดาษแบบ A4 แนวนอน (Landscape)
 ]);
 //รอบที่เลือก
 $id = $_GET['id'];
 if(!isset($id)){
     header('location:index.php');
 }
+$sqlround = "SELECT round_name FROM report_t3_round   WHERE round_id=$id  ";
+$rsround =  $mysqli->query($sqlround);
+$rowround = $rsround->fetch_array();
+$mount  = $rowround['round_name'];
 function count_degree($degree_name,$id){
     $mysqli = connect();
     $sql_count = "SELECT report_t3_graduate.std_id  FROM report_t3_graduate LEFT JOIN report_t3_faculty ON report_t3_graduate.faculty_name=report_t3_faculty.faculty_name_th WHERE  ";
@@ -32,7 +42,7 @@ function count_degree($degree_name,$id){
  $sqlDe = "SELECT * FROM report_t3_degree INNER  JOIN report_t3_graduate ON report_t3_degree.degree_name=report_t3_graduate.degree_name AND report_t3_graduate.round_id IN ($id)  GROUP BY report_t3_degree.degree_name order by degree_id DESC  ";
 $rsDe =  $mysqli->query($sqlDe);
 foreach($rsDe as $rowDe){
-  //  $mpdf->AddPage();
+    //$mpdf->AddPage();
 
   $numddd = count_degree($rowDe['degree_name'],$id);
 //ข้อมูลมีในระบบ
@@ -45,31 +55,71 @@ $num_data = $data->num_rows;
 $i=1;
    
     //นับจำนวนมากกว่า
-    
+    $css = '
+<style type="text/css">
+table {
+    font-size: 20px;
+}
+.orange {
+    background-color: orange;
+  }
+  tr:nth-child(odd) {
+    background-color: lightgray;
+  }
+  tr:nth-child(even) {
+    background-color: white; 
+  }  
+
+</style>';
+
+$content = $css . 
     // สร้างเนื้อหาของหน้ารายงาน
     
     $content = '';
-    $content .= "<h3>$rowDe[degree_name]</h3>";
+    $content .= "<h2 style='text-align: center; vertical-align: middle;'>รายชื่อนิสิตและบทความวิทยานิพนธ์$rowDe[degree_name]ที่ได้รับการตอบรับหรือตีพิมพ์เผยแพร่ในระดับชาติหรือระดับนานาชาติ ที่สำเร็จการศึกษา ประจำเดือน $mount</h2>";
     $content .= "<table class='table table-bordered' width='100%' border='1' style='border-collapse: collapse;'>";
     $content .= '<thead style="display: table-header-group;"><tr><th style="width: 5%;">ลำดับ</th><th style="width: 10%;">รหัสนิสิต</th><th style="width: 10%;">ชื่อ-นาสกุล</th><th style="width: 15%;">คณะ/วิทยาลัย/
-    สถาบัน</th><th style="width: 15%;">สาขา</th><th style="width: 5%;">ฐานข้อมูล</th><th style="width: 10%;">อนุมัติเล่ม</th><th style="width: 10%;">English
-    Test</th></tr></thead>';
+    สถาบัน</th><th style="width: 15%;">สาขา</th><th style="width: 20%;">ผลงานตีพิมพ์ที่ผ่านเกณฑ์ตามประกาศมหำวิทยาลัยมหาสารคาม</th><th style="width: 5%;">ฐานข้อมูล</th><th style="width: 10%;"> ค่ำน ำหนัก
+    ตำมเกณฑ์
+    สกอ.</th><th style="width: 10%;">หมายเหตุ
+    </th></tr></thead>';
     foreach ($data as $row) {
         $sql_count_tci = "SELECT * FROM report_t3_graduate WHERE std_id='$row[std_id]' ";
         $rs_count_tci = $mysqli->query($sql_count_tci);
        $row_count_tci = $rs_count_tci->fetch_array();
        $num_data_tcci = $rs_count_tci->num_rows;
-    $content .= '<tr><td style="text-align: center; vertical-align: middle;">' . $i . '</td><td style="text-align: center; vertical-align: middle;">' . $row['std_id'] . '</td><td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '</td><td>' . $row['faculty_name'] . '</td><td>' . $row['major_name'] . '</td><td>';
-     if($num_data_tcci==1) { 
-        $content .=$row['database']; }else{
-        $content .=$row['database'].'<br>';
-        $content .=$row['database'];
-         }
-     $content .='</td><td style="text-align: center; vertical-align: middle;">' . DateThai1($row['approval_date']) . '</td><td style="text-align: center; vertical-align: middle;">' . $row['exam_eng'] . '</td></tr>';
-     $i++;  
+        $content.='<tr>
+        <td>
+        '. $i .'
+        </td>
+        <td>
+        ' . $row['std_id'] . '
+        </td>
+        <td>' . $row['title'].$row['fname']. ' '.$row['lname']  . '
+        </td>
+        <td>' . $row['faculty_name'] . '
+        </td>
+        <td>' . $row['major_name'] . '
+        </td>
+        <td>';
+        if($num_data_tcci==1) { 
+            $content .=$row['published_work']; }else{
+            $content .=$row['published_work'].'<br>';
+            $content .=$row['published_work'];
+             }
+        $content .= '
+        </td>
+        <td>'.$row['database'].'
+        </td>
+        <td>'.$row['weight'].'
+        </td>
+        <td>'.$row['note'].'
+        </td>
+    </tr>';
+    $i++;  
 
     }
-
+    $content.='</tbody>';
     $content .= '</table>';
 
 
@@ -92,11 +142,12 @@ $i=1;
 //     // แสดงหมายเลขหน้า
 //     $current_page = $page; // เก็บค่าหน้าปัจจุบันในตัวแปร $current_page
 // }
-$mpdf->WriteHTML($content);
+//$mpdf->WriteHTML($content);
 //echo 'จำนวนแถวที่เหลือ: ' . $remainingLines;
+echo $content;
 }
 
-$mpdf->Output();
+//$mpdf->Output();
 
 ?>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">

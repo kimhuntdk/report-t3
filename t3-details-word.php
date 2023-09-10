@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/msword");
-header('Content-Disposition: attachment; filename="filename.doc"');
+header('Content-Disposition: attachment; filename="t3-details-word.doc"');
 require_once( "inc/db_connect.php" );
 $mysqli = connect();
 // require_once __DIR__ . '/vendor/autoload.php';

@@ -130,6 +130,7 @@ function DateThai1($strDate)
     $strSeconds= date("s",strtotime($strDate));
     $strMonthCut = Array("","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม");
     $strMonthThai=$strMonthCut[$strMonth];
+	$strYear = $strYear+543; 
     return "วันที่ $strDay $strMonthThai $strYear";
 }
 
