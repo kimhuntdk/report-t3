@@ -340,10 +340,10 @@ $faculty_name =   $row_data['faculty_name'];
         <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-size:14.0pt"><span style="font-family:&quot;TH SarabunPSK&quot;,sans-serif">'.$row_fac['major_name'].'</span></span></span></span></p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
-        <p>'.$master_in=intval(Count_Major_Master_In($row_fac['major_name'],$id)).'</p>
+        <p>'.$master_in=intval(Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
-        <p>'.$master_out=intval(Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
+        <p>'.$master_out=intval(Count_Major_Master_In($row_fac['major_name'],$id)).'</p>
         </td>
         <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; text-align: center; vertical-align: middle; width:20px">
         <p>'.$sum_in_out=intval(Count_Major_Master_In($row_fac['major_name'],$id)+Count_Major_Master_Out($row_fac['major_name'],$id)).'</p>
